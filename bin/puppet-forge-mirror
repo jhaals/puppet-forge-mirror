@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+require 'puppet-forge-mirror'
+
+if ARGV[0].nil?
+  puts "puppet-forge-mirror [module path]"
+  exit
+end
+
+fm = PuppetForgeMirror.new(
+  'https://forgeapi.puppetlabs.com',
+  ARGV[0])
+fm.download_modules

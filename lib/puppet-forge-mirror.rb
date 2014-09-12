@@ -7,9 +7,10 @@ require 'uri'
 
 # Mirror /v3 forges
 class PuppetForgeMirror
-  def initialize(forge_url, modules_dir)
+  def initialize(forge_url, modules_dir, max_size)
     @modules_dir = modules_dir
     @forge_url = forge_url
+    @max_size = max_size
   end
 
   # Perform http GET request, return response.body if status code is 200
@@ -53,7 +54,7 @@ class PuppetForgeMirror
 
       r = JSON.parse(data)
       r['results'].each do |m|
-        if m['file_size'] > 1024 * 1024 * 1
+        if m['file_size'] > 1024 * 1024 * @max_size.to_i
           puts "#{m['metadata']['name']} is too big, skipping"
           next
         end

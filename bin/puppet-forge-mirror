@@ -1,12 +1,25 @@
 #!/usr/bin/env ruby
 require 'puppet-forge-mirror'
+require 'optparse'
 
-if ARGV[0].nil?
-  puts "puppet-forge-mirror [module path]"
-  exit
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: puppet-forge-mirror [options]'
+  opts.on('-m', '--modulepath PATH', 'Downloaded modules will be stored here') do |path|
+    options[:modulepath] = path
+  end
+  opts.on('--max-size MB', 'Maximum size of module in megabyte, bigger modules will be skipped') do |max_size|
+    options[:max_size] = max_size
+  end
+end.parse!
+
+if options[:modulepath].nil?
+  puts 'No modulepath specified'
+  exit 1
 end
-
+options[:max_size] = 2 if options[:max_size].nil?
 fm = PuppetForgeMirror.new(
   'https://forgeapi.puppetlabs.com',
-  ARGV[0])
+  options[:modulepath],
+  options[:max_size])
 fm.download_modules
